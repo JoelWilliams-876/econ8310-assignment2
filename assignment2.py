@@ -28,7 +28,7 @@ if y.dtype == 'object':
     y = (y == y.unique()[0]).astype(int)  # Example: first category = 1, others = 0
 
 # Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42, stratify=y)
 
 # Define model
 model = XGBClassifier(
