@@ -8,6 +8,7 @@ Original file is located at
 """
 
 # this code was reviewed and corrected by AI (Gemini and ChatGPT)
+#i am trying to get this to github but its not working.
 import numpy as np
 import pandas as pd
 from xgboost import XGBClassifier
