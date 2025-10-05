@@ -54,7 +54,8 @@ test_data = test_data.head(1000)
 # Predict on the test data
 # Return 0 or 1 predictions (not boolean T/F)
 # Return integers
-pred = modelFit.predict_proba(test_data)[:, 1]
+#pred = modelFit.predict_proba(test_data)[:, 1]
+pred = pd.Series(modelFit.predict(test_data))
 
 print(f"Generated {len(pred)} predictions.")
 print("Sample predictions:", pred[:10])
