@@ -12,54 +12,49 @@ Original file is located at
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score
+from datetime import datetime
+from xgboost import XGBClassifier
 
-# Load data
-df = pd.read_csv('https://raw.githubusercontent.com/dustywhite7/Econ8310/master/AssignmentData/assignment3.csv')
+data = pd.read_csv("https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3.csv")
+test_data = pd.read_csv("https://github.com/dustywhite7/Econ8310/raw/master/AssignmentData/assignment3test.csv")
 
-# Define features and target
-X = df[['Total']]
-y = df['meal']
+data = data.ffill()
+Y = data['meal']
+X = data.drop(['meal','id','DateTime'], axis=1)
 
-# Optional: convert target to binary if it's not numeric
-if y.dtype == 'object':
-    y = (y == y.unique()[0]).astype(int)  # Example: first category = 1, others = 0
+#x, xt, y, yt = train_test_split(X, Y, test_size=0.1, random_state=42)
 
-# Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+# Model
+model = XGBClassifier()
+modelFit = model.fit(X, Y)
 
-# Define model
-model = XGBClassifier(
-    n_estimators=100,
-    max_depth=5,
-    learning_rate=0.5,
-    objective='binary:logistic',
-    random_state=42
-)
+# Fill missing values
+test_data = test_data.ffill()
+Yt = test_data['meal']
+Xt = test_data.drop(['meal','id','DateTime'], axis=1)
 
-# Fit the model on training data
-modelFit = model.fit(X_train, y_train)
+pred = model.predict(Xt)
 
-# Predict on test data
-pred = model.predict(X_test)
+# Predict on 1000-row test data
+# Ensure test_data has the same columsn as the training data (x)
+# Get missing colummns from training data
+missing_cols = set(X.columns) - set(Xt.columns)
 
-# Evaluate accuracy
-print(f"XGBoost Accuracy: {accuracy_score(y_test, pred) * 100:.2f}%")
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, pred))
-print("\nClassification Report:\n", classification_report(y_test, pred))
+# Add missing columns to test_data with 0
+for col in missing_cols:
+    test_data[col] = 0
 
-# import numpy as np
-# import pandas as pd
-# from xgboost import XGBClassifier
-# from sklearn.model_selection import train_test_split
-# from sklearn.metrics import accuracy_score
+# Reorder columns in test_data to match training data
+test_data = test_data[X.columns]
 
-# df = pd.read_csv('https://raw.githubusercontent.com/dustywhite7/Econ8310/master/AssignmentData/assignment3.csv')
+# Restrict test data to 1000 rows
+test_data = test_data.head(1000)
 
-# y = df['meal']
-# x = df[['Total']]
-# x,xt,y,yt = train_test_split(x,y,test_size=0.2)
-# model = XGBClassifier(n_estimators=100,max_depth=5,learning_rate=0.5,objective='binary:logistic')
-# modelFit = model.fit(x,y)
-# pred = model.predict(xt)
-# print("XGBoost Accuracy {}%.".format(accuracy_score(yt,pred)*100))
+# Predict on the test data
+# Return 0 or 1 predictions (not boolean T/F)
+# Return integers
+pred = modelFit.predict_proba(test_data)[:, 1]
+
+print(f"Generated {len(pred)} predictions.")
+print("Sample predictions:", pred[:10])
