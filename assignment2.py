@@ -43,12 +43,12 @@ model = XGBClassifier(
 modelFit = model.fit(X_train, y_train)
 
 # Predict on test data
-y_pred = model.predict(X_test)
+pred = model.predict(X_test)
 
 # Evaluate accuracy
-print(f"XGBoost Accuracy: {accuracy_score(y_test, y_pred) * 100:.2f}%")
-print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print(f"XGBoost Accuracy: {accuracy_score(y_test, pred) * 100:.2f}%")
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, pred))
+print("\nClassification Report:\n", classification_report(y_test, pred))
 
 # import numpy as np
 # import pandas as pd
